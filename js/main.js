@@ -18,6 +18,8 @@ const hamburgerImg = new Image();
 hamburgerImg.src = 'css/images/hamburger.png';
 const chocolateImg = new Image();
 chocolateImg.src = 'css/images/chocolate.png';
+const backgroundImg = new Image();
+backgroundImg.src = 'css/images/background.png';
 
 const player = {
     x: 50,
@@ -124,16 +126,7 @@ function handleObstacles() {
 }
 
 function drawBackground() {
-    ctx.fillStyle = '#003';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // simple city skyline
-    ctx.fillStyle = '#111';
-    for (let i = 0; i < canvas.width; i += 50) {
-        const buildingHeight = 50 + Math.random() * 100;
-        ctx.fillRect(i, canvas.height - buildingHeight - 20, 40, buildingHeight);
-    }
-    ctx.fillStyle = '#222';
-    ctx.fillRect(0, canvas.height - 20, canvas.width, 20); // ground
+    ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 }
 
 
@@ -158,10 +151,17 @@ window.addEventListener('keydown', e => {
     }
 });
 
-playerImg.onload = () => {
-    scoreDisplay.textContent = 'Score: ' + score;
-    gameLoop();
-};
+let assetsLoaded = 0;
+function startIfReady() {
+    assetsLoaded++;
+    if (assetsLoaded === 2) {
+        scoreDisplay.textContent = 'Score: ' + score;
+        gameLoop();
+    }
+}
+
+playerImg.onload = startIfReady;
+backgroundImg.onload = startIfReady;
 
 restartBtn.addEventListener('click', () => {
     score = 0;

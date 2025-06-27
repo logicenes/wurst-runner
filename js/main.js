@@ -5,20 +5,23 @@ const gameOverEl = document.getElementById('gameOver');
 const finalScoreEl = document.getElementById('finalScore');
 const restartBtn = document.getElementById('restartBtn');
 const muteBtn = document.getElementById('muteBtn');
+const startScreen = document.getElementById('startScreen');
+const startBtn = document.getElementById('startBtn');
 
-// 🎵 Musik
+// Musik
 const bgMusic = new Audio('audio/bauchnabel.mp3');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
+bgMusic.muted = false;
 let musicStarted = false;
 
-// 🔇 Mute / Unmute
+// Mute/Unmute
 muteBtn.addEventListener('click', () => {
     bgMusic.muted = !bgMusic.muted;
     muteBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
 });
 
-// Spiel-Variablen
+// Spiel-Logik
 const gravity = 0.6;
 let gameSpeed = 4;
 let score = 0;
@@ -94,7 +97,7 @@ class Obstacle {
 
 let obstacles = [];
 let obstacleTimer = 0;
-let spawnInterval = 1500; // ms
+let spawnInterval = 1500;
 
 function spawnObstacle() {
     const rand = Math.random();
@@ -166,44 +169,49 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Start Musik + Spiel bei Interaktion
-window.addEventListener('keydown', e => {
+function startMusic() {
     if (!musicStarted) {
-        bgMusic.play();
+        bgMusic.play().catch(err => console.log('❌ Music error:', err));
         musicStarted = true;
     }
+}
+
+window.addEventListener('keydown', e => {
+    startMusic();
     if (e.code === 'Space' || e.code === 'ArrowUp') {
         player.jump();
     }
 });
 
 window.addEventListener('click', () => {
-    if (!musicStarted) {
-        bgMusic.play();
-        musicStarted = true;
-    }
+    startMusic();
 });
 
 let assetsLoaded = 0;
 function startIfReady() {
     assetsLoaded++;
     if (assetsLoaded === 2) {
-        scoreDisplay.textContent = 'Score: ' + score;
-        requestAnimationFrame(gameLoop);
+        // Warte auf Startbutton
     }
 }
 
 playerImg.onload = startIfReady;
 backgroundImg.onload = startIfReady;
 
-restartBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', () => {
+    startScreen.style.display = 'none';
+    gameOverEl.classList.add('hidden');
     score = 0;
-    scoreDisplay.textContent = 'Score: ' + score;
-    obstacles = [];
     obstacleTimer = 0;
+    obstacles = [];
     player.y = canvas.height - 80;
     player.dy = 0;
     gameOver = false;
-    gameOverEl.classList.add('hidden');
+    scoreDisplay.textContent = 'Score: 0';
+    startMusic();
     requestAnimationFrame(gameLoop);
+});
+
+restartBtn.addEventListener('click', () => {
+    startScreen.style.display = 'flex';
 });

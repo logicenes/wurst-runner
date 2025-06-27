@@ -7,15 +7,30 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div id="scoreDisplay">Score: 0</div>
-
-    <button id="muteBtn">🔊</button>
-
-    <canvas id="gameCanvas" width="1000" height="500"></canvas>
-    <div id="gameOver" class="hidden">
-        <p id="finalScore"></p>
-        <button id="restartBtn">Restart</button>
+    <!-- Startscreen -->
+    <div id="startScreen">
+        <h1>Wurst Runner</h1>
+        <p><img src="css/images/up-arrow.png" alt="Jump" class="icon"> Press <strong>↑</strong> or <strong>Space</strong> to jump</p>
+        <p>
+            Avoid <img src="css/images/chocolate.png" alt="chocolate" class="icon danger">  
+            Collect <img src="css/images/hotdog.png" alt="hotdog" class="icon"> and 
+            <img src="css/images/hamburger.png" alt="hamburger" class="icon">
+        </p>
+        <button id="startBtn">Start Game</button>
     </div>
+
+    <!-- Wrapper für Spiel-Inhalte -->
+    <div id="gameWrapper">
+        <div id="scoreDisplay">Score: 0</div>
+        <button id="muteBtn">🔊</button>
+        <canvas id="gameCanvas" width="1000" height="500"></canvas>
+
+        <div id="gameOver" class="hidden">
+            <p id="finalScore">Score: 0</p>
+            <button id="restartBtn">Restart</button>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
 </body>
 </html>

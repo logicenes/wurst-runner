@@ -80,7 +80,7 @@ class Obstacle {
 
 let obstacles = [];
 let obstacleTimer = 0;
-let spawnInterval = 90;
+let spawnInterval = 1500;
 
 function spawnObstacle() {
     const rand = Math.random();
@@ -94,6 +94,8 @@ function spawnObstacle() {
 }
 
 function handleObstacles(deltaTime) {
+    obstacleTimer-=deltaTime;
+    
     if (obstacleTimer <= 0) {
         spawnObstacle();
         obstacleTimer = spawnInterval;

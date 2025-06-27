@@ -4,7 +4,21 @@ const scoreDisplay = document.getElementById('scoreDisplay');
 const gameOverEl = document.getElementById('gameOver');
 const finalScoreEl = document.getElementById('finalScore');
 const restartBtn = document.getElementById('restartBtn');
+const muteBtn = document.getElementById('muteBtn');
 
+// 🎵 Musik
+const bgMusic = new Audio('audio/bauchnabel.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+let musicStarted = false;
+
+// 🔇 Mute / Unmute
+muteBtn.addEventListener('click', () => {
+    bgMusic.muted = !bgMusic.muted;
+    muteBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
+});
+
+// Spiel-Variablen
 const gravity = 0.6;
 let gameSpeed = 4;
 let score = 0;
@@ -80,7 +94,7 @@ class Obstacle {
 
 let obstacles = [];
 let obstacleTimer = 0;
-let spawnInterval = 1500;
+let spawnInterval = 1500; // ms
 
 function spawnObstacle() {
     const rand = Math.random();
@@ -94,13 +108,10 @@ function spawnObstacle() {
 }
 
 function handleObstacles(deltaTime) {
-    obstacleTimer-=deltaTime;
-    
+    obstacleTimer -= deltaTime;
     if (obstacleTimer <= 0) {
         spawnObstacle();
         obstacleTimer = spawnInterval;
-    } else {
-        obstacleTimer--;
     }
 
     for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -155,9 +166,21 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+// Start Musik + Spiel bei Interaktion
 window.addEventListener('keydown', e => {
+    if (!musicStarted) {
+        bgMusic.play();
+        musicStarted = true;
+    }
     if (e.code === 'Space' || e.code === 'ArrowUp') {
         player.jump();
+    }
+});
+
+window.addEventListener('click', () => {
+    if (!musicStarted) {
+        bgMusic.play();
+        musicStarted = true;
     }
 });
 

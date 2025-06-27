@@ -36,3 +36,13 @@ canvas {
 .hidden {
     display: none;
 }
+
+#muteBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    font-size: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+}

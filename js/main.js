@@ -29,13 +29,14 @@ const player = {
     dy: 0,
     jumpForce: 12,
     grounded: false,
-    update() {
+    update(deltaTime) {
         if (!this.grounded) {
-            this.dy += gravity;
+            this.dy += gravity * (deltaTime / 16.67);
         } else {
             this.dy = 0;
         }
-        this.y += this.dy;
+        this.y += this.dy * (deltaTime / 16.67);
+
         if (this.y + this.height >= canvas.height - 20) {
             this.y = canvas.height - 20 - this.height;
             this.grounded = true;
@@ -60,19 +61,20 @@ class Obstacle {
         this.y = canvas.height - 20 - height;
         this.width = width;
         this.height = height;
-        this.type = type; // 'hotdog', 'hamburger', 'chocolate'
+        this.type = type;
     }
-    update() {
-        this.x -= gameSpeed;
+
+    update(deltaTime) {
+        this.x -= gameSpeed * (deltaTime / 16.67);
     }
+
     draw() {
-        if (this.type === 'hotdog') {
-            ctx.drawImage(hotdogImg, this.x, this.y, this.width, this.height);
-        } else if (this.type === 'hamburger') {
-            ctx.drawImage(hamburgerImg, this.x, this.y, this.width, this.height);
-        } else if (this.type === 'chocolate') {
-            ctx.drawImage(chocolateImg, this.x, this.y, this.width, this.height);
-        }
+        const img = {
+            hotdog: hotdogImg,
+            hamburger: hamburgerImg,
+            chocolate: chocolateImg
+        }[this.type];
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);
     }
 }
 
@@ -91,18 +93,18 @@ function spawnObstacle() {
     }
 }
 
-function handleObstacles() {
+function handleObstacles(deltaTime) {
     if (obstacleTimer <= 0) {
         spawnObstacle();
         obstacleTimer = spawnInterval;
     } else {
         obstacleTimer--;
     }
+
     for (let i = obstacles.length - 1; i >= 0; i--) {
         const obs = obstacles[i];
-        obs.update();
+        obs.update(deltaTime);
 
-        // collision
         if (
             player.x < obs.x + obs.width &&
             player.x + player.width > obs.x &&
@@ -120,8 +122,9 @@ function handleObstacles() {
 
         if (obs.x + obs.width < 0) {
             obstacles.splice(i, 1);
+        } else {
+            obs.draw();
         }
-        obs.draw();
     }
 }
 
@@ -129,8 +132,12 @@ function drawBackground() {
     ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 }
 
+let lastTime = 0;
 
-function gameLoop() {
+function gameLoop(timestamp) {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
     if (gameOver) {
         finalScoreEl.textContent = 'Score: ' + score;
         gameOverEl.classList.remove('hidden');
@@ -139,9 +146,10 @@ function gameLoop() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBackground();
-    player.update();
+    player.update(deltaTime);
     player.draw();
-    handleObstacles();
+    handleObstacles(deltaTime);
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -156,7 +164,7 @@ function startIfReady() {
     assetsLoaded++;
     if (assetsLoaded === 2) {
         scoreDisplay.textContent = 'Score: ' + score;
-        gameLoop();
+        requestAnimationFrame(gameLoop);
     }
 }
 
@@ -172,5 +180,5 @@ restartBtn.addEventListener('click', () => {
     player.dy = 0;
     gameOver = false;
     gameOverEl.classList.add('hidden');
-    gameLoop();
+    requestAnimationFrame(gameLoop);
 });
